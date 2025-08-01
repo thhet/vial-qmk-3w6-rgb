@@ -2,22 +2,69 @@
 
 enum layers {
     _BASE, // default layer
+    _SYMB, // symbols
     _NAV,  // navigation keys
 };
 
-// Key definitions for layer switching and one-shot modifiers
 #pragma region Custom Key Definitions
-#define LT_NAV_SPACE LT(_NAV, KC_SPC)
-#define MO_NAV MO(_NAV)
+#define LT_NAV_SPC LT(_NAV, KC_SPC)
+#define MO_NAV   MO(_NAV)
+#define MO_SYMB  MO(_SYMB)
 
-#define OS_LSFT OSM(MOD_LSFT)
-#define OS_RSFT OSM(MOD_RSFT)
-#define OS_LCTL OSM(MOD_LCTL)
-#define OS_RCTL OSM(MOD_RCTL)
-#define OS_LALT OSM(MOD_LALT)
-#define OS_RALT OSM(MOD_RALT)
-#define OS_LGUI OSM(MOD_LGUI)
-#define OS_RGUI OSM(MOD_RGUI)
+#define OS_LSFT  OSM(MOD_LSFT)
+#define OS_RSFT  OSM(MOD_RSFT)
+#define OS_LCTL  OSM(MOD_LCTL)
+#define OS_RCTL  OSM(MOD_RCTL)
+#define OS_LALT  OSM(MOD_LALT)
+#define OS_RALT  OSM(MOD_RALT)
+#define OS_LGUI  OSM(MOD_LGUI)
+#define OS_RGUI  OSM(MOD_RGUI)
+
+#define GER_ODIA KC_SCLN // Ö
+#define GER_ADIA KC_QUOT // Ä
+#define GER_UDIA KC_LBRC // Ü
+#define GER_SS   KC_MINS // ß
+#define GER_PLUS KC_RBRC // +
+#define GER_MINS KC_SLSH // -
+#define GER_HASH KC_NUHS // #
+#define GER_LABK KC_NUBS // <
+#define GER_CIRC KC_GRV  // ^ (dead)
+#define GER_ACUT KC_EQL  // ´ (dead)
+
+enum custom_keycodes {
+    // Switch app: cmd+tab on Mac, alt+tab on Win
+    SW_APP = SAFE_RANGE,
+    // (, or { based on which modifier is held
+    LEFT_ENCLOSE,
+     // ), or } based on which modifier is held
+    RIGHT_ENCLOSE,
+};
+#pragma endregion
+
+#pragma region Layouts
+const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+
+    [_BASE] = LAYOUT_split_3x5_3(
+        KC_Q, KC_W, KC_E,    KC_R,       KC_T,             KC_Z,    KC_U,   KC_I,    KC_O,   KC_P,
+        KC_A, KC_S, KC_D,    KC_F,       KC_G,             KC_H,    KC_J,   KC_K,    KC_L,   GER_ODIA,
+        KC_Y, KC_X, KC_C,    KC_V,       KC_B,             KC_N,    KC_M,   KC_COMM, KC_DOT, GER_MINS,
+                    _______, LT_NAV_SPC, OS_LSFT,          OS_RSFT, MO_NAV, MO_SYMB
+    ),
+
+    [_SYMB] = LAYOUT_split_3x5_3(
+        GER_UDIA, S(GER_UDIA), KC_EQL,       S(KC_EQL),        KC_BSLS,        _______, S(KC_7),    S(KC_8),   KC_DOT,    _______,
+        GER_ADIA, S(GER_ADIA), LEFT_ENCLOSE, RIGHT_ENCLOSE,    KC_GRV,         _______, OS_RSFT,    OS_RCTL,   OS_RALT,   OS_RGUI,
+        GER_SS,   S(KC_SCLN),  KC_LBRC,      KC_RBRC, _______, KC_MINS,        S(KC_1), S(KC_COMM), S(KC_DOT), S(KC_SLSH),
+                                             _______, _______, KC_ENT,         _______, _______,    _______
+    ),
+
+    [_NAV] = LAYOUT_split_3x5_3(
+        _______, _______, _______, _______, _______,         KC_PGUP, KC_HOME, KC_UP,   KC_END,  _______,
+        OS_LGUI, OS_LALT, OS_LCTL, OS_LSFT, _______,         KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_SPC,
+        _______, _______, _______, _______, _______,         KC_ESC,  KC_BSPC, KC_ENT,  KC_TAB,  KC_DEL,
+                          _______, _______, _______,         KC_ENT,  KC_BSPC, _______
+    ),
+};
 #pragma endregion
 
 #pragma region Colors
@@ -39,23 +86,6 @@ enum layers {
 #define RGB_LIGHT_RED LED_HIGH_INTENSITY, 0x00, 0x00
 #define RGB_LIGHT_WHITE LED_HIGH_INTENSITY, LED_HIGH_INTENSITY, LED_HIGH_INTENSITY
 #define RGB_LIGHT_YELLOW LED_HIGH_INTENSITY, LED_HIGH_INTENSITY, 0x00
-#pragma endregion
-
-#pragma region Layouts
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-
-    [_BASE] = LAYOUT_split_3x5_3(
-        KC_Q, KC_W, KC_E,    KC_R,         KC_T,             KC_Z,    KC_U,   KC_I, KC_O, KC_P,
-        KC_A, KC_S, KC_D,    KC_F,         KC_G,             KC_H,    KC_J,   KC_K, KC_L, KC_SCLN,
-        KC_Y, KC_X, KC_C,    KC_V,         KC_B,             KC_N,    KC_M,   KC_COMM, KC_DOT, KC_MINS,
-                    _______, LT_NAV_SPACE, OS_LSFT,          OS_RSFT, MO_NAV, _______),
-
-    [_NAV] = LAYOUT_split_3x5_3(
-        _______, _______, _______, _______, _______,         KC_PGUP, KC_HOME, KC_UP, KC_END, _______,
-        OS_LGUI, OS_LALT, OS_LCTL, OS_LSFT, _______,         KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_SPC,
-        _______, _______, _______, _______, _______,         KC_ESC, KC_BSPC, KC_ENT, KC_TAB, KC_DEL,
-                          _______, _______, _______,         KC_ENT, KC_BSPC, _______),
-};
 #pragma endregion
 
 #pragma region Variables
@@ -165,9 +195,31 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             light_up_right_mods(RGB_OFF, RGB_LIGHT_WHITE);
             break;
 
+        case _SYMB:
+            // Mods on the right hand side
+            light_up_right_mods(RGB_DARK_WHITE, RGB_LIGHT_WHITE);
+
+            // Symbol layer is blue coded
+
+            // Umlauts
+            rgb_matrix_set_color(0, RGB_DARK_BLUE);  // ü
+            rgb_matrix_set_color(1, RGB_DARK_BLUE);  // Ü
+            rgb_matrix_set_color(9, RGB_DARK_BLUE);  // ä
+            rgb_matrix_set_color(8, RGB_DARK_BLUE);  // Ä
+            rgb_matrix_set_color(10, RGB_DARK_BLUE);  // ß
+
+            // Brackets
+            rgb_matrix_set_color(7, RGB_DARK_CYAN);  // ({
+            rgb_matrix_set_color(6, RGB_DARK_CYAN);  // )}
+            rgb_matrix_set_color(12, RGB_DARK_CYAN);  // [
+            rgb_matrix_set_color(13, RGB_DARK_CYAN);  // ]
+            break;
+
         case _NAV:
             // Mods on the left hand side
             light_up_left_mods(RGB_DARK_WHITE, RGB_LIGHT_WHITE);
+
+            // Navigation layer is magenta coded
 
             // Color the arrow keys
             rgb_matrix_set_color(33, RGB_DARK_MAGENTA);     // Up
@@ -175,7 +227,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(28, RGB_DARK_MAGENTA);     // Down
             rgb_matrix_set_color(27, RGB_DARK_MAGENTA);     // Right
 
-            rgb_matrix_set_color(34, RGB_DARK_WHITE);       // ESC
+            rgb_matrix_set_color(34, RGB_DARK_RED);       // ESC
             break;
     }
     return false;
@@ -221,9 +273,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 active_left_gui_osm = true;
                 break;
             default:
-                if (keycode != LT_NAV_SPACE &&
-                    keycode != MO_NAV /* &&
-                    keycode != MO_SYMB &&
+                if (keycode != LT_NAV_SPC &&
+                    keycode != MO_NAV  &&
+                    keycode != MO_SYMB /*&&
                     keycode != MO_NUM &&
                     keycode != MO_FUN*/) {
                     // Reset the OSM state when any other key is pressed.
@@ -233,5 +285,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
     }
     return true;
+}
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT_NAV_SPC:
+            return 120;
+        default:
+            return TAPPING_TERM;
+    }
 }
 #pragma endregion
