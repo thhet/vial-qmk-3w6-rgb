@@ -1,69 +1,53 @@
-/* Copyright 2021 weteor
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #include QMK_KEYBOARD_H
 
-enum layers
-{
-    _ALPHA_QWERTY = 0,
-    _ALPHA_COLEMAK,
-    _SYM,
-    _NAV,
-    _NUM,
-    _CFG,
+enum layers {
+    _BASE, // default layer
+    _NAV,  // navigation keys
 };
 
+// Key definitions for layer switching and one-shot modifiers
+#pragma region A
+#define LT_NAV_SPACE LT(_NAV, KC_SPC)
+#define MO_NAV MO(_NAV)
+
+#define OS_LSFT OSM(MOD_LSFT)
+#define OS_RSFT OSM(MOD_RSFT)
+#define OS_LCTL OSM(MOD_LCTL)
+#define OS_RCTL OSM(MOD_RCTL)
+#define OS_LALT OSM(MOD_LALT)
+#define OS_RALT OSM(MOD_RALT)
+#define OS_LGUI OSM(MOD_LGUI)
+#define OS_RGUI OSM(MOD_RGUI)
+#pragma endregion
+
+#pragma region Layouts
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-    
-    [_ALPHA_QWERTY] = LAYOUT_split_3x5_3(
-        KC_Q,         KC_W,    KC_E,    KC_R,    KC_T,                                                KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,  
-        KC_A,         KC_S,    KC_D,    KC_F,    KC_G,                                                KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,
-        LSFT_T(KC_Z), KC_X,    KC_C,    KC_V,    KC_B,                                                KC_N,    KC_M,    KC_COMM, KC_DOT,  RSFT_T(KC_SLSH),
-            
-                        LCTL_T(KC_ESC), LT(_NUM,KC_SPC), LT(_NAV, KC_TAB),     LT(_SYM, KC_BSPC), KC_ENT, LALT_T(KC_DEL)         
-    ),
-    [_ALPHA_COLEMAK] = LAYOUT_split_3x5_3(
-        KC_Q,         KC_W,    KC_F,    KC_P,    KC_G,                                                KC_J,    KC_L,    KC_U,    KC_Y,    KC_QUOT,
-        KC_A,         KC_R,    KC_S,    KC_T,    KC_D,                                                KC_H,    KC_N,    KC_E,    KC_I,    KC_O,
-        LSFT_T(KC_Z), KC_X,    KC_C,    KC_V,    KC_B,                                                KC_K,    KC_M,    KC_COMM, KC_DOT,  RSFT_T(KC_SCLN),
-                        LCTL_T(KC_ENT), LT(_NUM,KC_SPC), LT(_NAV, KC_TAB),     LT(_SYM, KC_BSPC), KC_ENT, LALT_T(KC_DEL)         
-    ),
-    [_SYM] = LAYOUT_split_3x5_3(
-        KC_GRV , KC_CIRC,   KC_AT,  KC_DLR, KC_TILD,                                KC_AMPR, KC_EXLM, KC_PIPE, KC_UNDS, KC_HASH,
-        KC_SLSH, KC_LBRC, KC_LCBR, KC_LPRN,  KC_EQL,                                KC_ASTR, KC_RPRN, KC_RCBR, KC_RBRC, KC_BSLS, 
-        _______, KC_QUES, KC_PLUS, KC_PERC, XXXXXXX,                                XXXXXXX, XXXXXXX, KC_MINS, XXXXXXX, _______,
-                                        XXXXXXX, MO(_CFG), XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX         
-    ),
+    [_BASE] = LAYOUT_split_3x5_3(
+        KC_Q, KC_W, KC_E,    KC_R,         KC_T,             KC_Z,    KC_U,   KC_I, KC_O, KC_P,
+        KC_A, KC_S, KC_D,    KC_F,         KC_G,             KC_H,    KC_J,   KC_K, KC_L, KC_SCLN,
+        KC_Y, KC_X, KC_C,    KC_V,         KC_B,             KC_N,    KC_M,   KC_COMM, KC_DOT, KC_MINS,
+                    _______, LT_NAV_SPACE, OS_LSFT,          OS_RSFT, MO_NAV, _______),
+
     [_NAV] = LAYOUT_split_3x5_3(
-        XXXXXXX, KC_VOLD, KC_MUTE, KC_VOLU, XXXXXXX,                                XXXXXXX, KC_PGDN,   KC_UP, KC_PGUP,  KC_DEL,
-        KC_MPRV, KC_MPLY, KC_MSTP, KC_MNXT, XXXXXXX,                                KC_HOME, KC_LEFT, KC_DOWN, KC_RGHT,  KC_END,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                                XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-                                        XXXXXXX, XXXXXXX, XXXXXXX,      XXXXXXX, MO(_CFG), XXXXXXX         
-    ),
-    [_NUM] = LAYOUT_split_3x5_3(
-        XXXXXXX,  KC_F9, KC_F10, KC_F11, KC_F12,                                    KC_PPLS,  KC_P7,  KC_P8,  KC_P9, KC_PSLS,
-        XXXXXXX,  KC_F5,  KC_F6,  KC_F7,  KC_F8,                                    KC_P0,  KC_P4,  KC_P5,  KC_P6, KC_PDOT,
-        XXXXXXX,  KC_F1,  KC_F2,  KC_F3,  KC_F4,                                    KC_PMNS,  KC_P1,  KC_P2,  KC_P3, KC_PAST,
-                                        XXXXXXX, XXXXXXX, XXXXXXX,      KC_PEQL, KC_PENT, XXXXXXX
-    ),
-    [_CFG] = LAYOUT_split_3x5_3(
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                                XXXXXXX, XXXXXXX, XXXXXXX,DF(_ALPHA_QWERTY), DF(_ALPHA_COLEMAK),
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                                XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                                XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-                                         XXXXXXX, XXXXXXX, XXXXXXX,     XXXXXXX, XXXXXXX, XXXXXXX
-    ),
+        _______, _______, _______, _______, _______,         KC_PGUP, KC_HOME, KC_UP, KC_END, _______,
+        OS_LGUI, OS_LALT, OS_LCTL, OS_LSFT, _______,         KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_SPC,
+        _______, _______, _______, _______, _______,         KC_ESC, KC_BSPC, KC_ENT, KC_TAB, KC_DEL,
+                          _______, _______, _______,         KC_ENT, KC_BSPC, _______),
 };
+#pragma endregion
+
+
+#pragma region System Hooks
+// This is ran as the very last task in the keyboard initialization process. This is useful if you want to
+// make changes to certain features, as they should be initialized by this point.
+void keyboard_post_init_user(void) {
+    rgblight_sethsv_noeeprom(0, 0, 0);
+
+    // This is good in case I screw anything up with bad code; it's REALLY hard
+    // to fix it when mods get messed up since it can mess up the whole OS.
+    //
+    // Ctrl+alt+del can help on Windows, as can osk.exe sometimes.
+    clear_mods();
+}
+#pragma endregion

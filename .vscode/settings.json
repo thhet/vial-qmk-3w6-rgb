@@ -2,6 +2,8 @@
 {
     // Unofficially, QMK uses spaces for indentation
     "editor.insertSpaces": true,
+    "editor.formatOnSave": false,
+
     // Configure glob patterns for excluding files and folders.
     "files.exclude": {
         "**/.build": true,
@@ -29,6 +31,7 @@
         "editor.formatOnSave": false
     },
     "clangd.arguments": [
-        "--header-insertion=never"
+        "--header-insertion=never",
+        "--compile-commands-dir=C:/Users/hetze/qmk_firmware"
     ]
 }

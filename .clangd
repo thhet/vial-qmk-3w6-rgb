@@ -1,4 +1,4 @@
 CompileFlags:
-  Add: [-Wno-unknown-attributes, -Wno-maybe-uninitialized, -Wno-unknown-warning-option]
+  Add: [-Wno-unknown-attributes, -Wno-maybe-uninitialized, -Wno-unknown-warning-option, -IC:/Users/hetze/qmk_firmware/quantum, -IC:/Users/hetze/qmk_firmware/tmk_core, -IC:/Users/hetze/qmk_firmware/drivers, -IC:/Users/hetze/qmk_firmware/drivers]
   Remove: [-W*, -mmcu=*, -mcpu=*, -mfpu=*, -mfloat-abi=*, -mno-unaligned-access, -mno-thumb-interwork, -mcall-prologues]
   Compiler: clang
