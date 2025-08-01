@@ -3,6 +3,8 @@
 enum layers {
     _BASE, // default layer
     _SYMB, // symbols
+    _NUM,  // numbers
+    _FUN,  // function keys
     _NAV,  // navigation keys
 };
 
@@ -10,6 +12,8 @@ enum layers {
 #define LT_NAV_SPC LT(_NAV, KC_SPC)
 #define MO_NAV   MO(_NAV)
 #define MO_SYMB  MO(_SYMB)
+#define MO_NUM   MO(_NUM)
+#define MO_FUN   MO(_FUN)
 
 #define OS_LSFT  OSM(MOD_LSFT)
 #define OS_RSFT  OSM(MOD_RSFT)
@@ -48,7 +52,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q, KC_W, KC_E,    KC_R,       KC_T,             KC_Z,    KC_U,   KC_I,    KC_O,   KC_P,
         KC_A, KC_S, KC_D,    KC_F,       KC_G,             KC_H,    KC_J,   KC_K,    KC_L,   GER_ODIA,
         KC_Y, KC_X, KC_C,    KC_V,       KC_B,             KC_N,    KC_M,   KC_COMM, KC_DOT, GER_MINS,
-                    _______, LT_NAV_SPC, OS_LSFT,          OS_RSFT, MO_NAV, MO_SYMB
+                    MO_FUN,  LT_NAV_SPC, MO_NUM,           KC_RSFT, MO_NAV, MO_SYMB
     ),
 
     [_SYMB] = LAYOUT_split_3x5_3(
@@ -56,6 +60,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         GER_ADIA, S(GER_ADIA), LEFT_ENCLOSE, RIGHT_ENCLOSE,    KC_GRV,         _______, OS_RSFT,    OS_RCTL,   OS_RALT,   OS_RGUI,
         GER_SS,   S(KC_SCLN),  KC_LBRC,      KC_RBRC, _______, KC_MINS,        S(KC_1), S(KC_COMM), S(KC_DOT), S(KC_SLSH),
                                              _______, _______, KC_ENT,         _______, _______,    _______
+    ),
+
+    [_NUM] = LAYOUT_split_3x5_3(
+        KC_TAB,  KC_LEFT, KC_DOT,  KC_RGHT, S(KC_MINS),        _______, KC_7,    KC_8, KC_9, S(KC_EQL),
+        OS_LGUI, OS_LALT, OS_LCTL, OS_LSFT, MO_NAV,            _______, KC_4,    KC_5, KC_6, KC_MINS,
+        _______, _______, KC_COMM, _______, _______,           KC_MINS, KC_1,    KC_2, KC_3, _______,
+                          _______, _______, _______,           KC_ENT,  KC_BSPC, KC_0
+    ),
+
+    [_FUN] = LAYOUT_split_3x5_3(
+        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,            _______, KC_F7,  KC_F8, KC_F9, KC_F12,
+        OS_LGUI, OS_LALT, OS_LCTL, OS_LSFT, _______,         _______, KC_F4,  KC_F5, KC_F6, KC_F11,
+        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,            _______, KC_F1,  KC_F2, KC_F3, KC_F10,
+                          _______, _______, _______,         _______, KC_CAPS, _______
     ),
 
     [_NAV] = LAYOUT_split_3x5_3(
@@ -152,6 +170,14 @@ void light_up_right_mods(
     }
 }
 
+// Sets all keycodes specified in the array to the given color. This is good for
+// coloring arbitrary keys like WASD or all of the number keys at once.
+void set_all_keys_colors(const uint8_t keycodes[], uint8_t len, uint8_t r, uint8_t g, uint8_t b) {
+    for (uint8_t i = 0; i < len; ++i) {
+        rgb_matrix_set_color(keycodes[i], r, g, b);
+    }
+}
+
 void reset_all_osm(void) {
     active_right_shift_osm = false;
     active_left_shift_osm = false;
@@ -170,7 +196,7 @@ void reset_all_osm(void) {
 void keyboard_post_init_user(void) {
     rgblight_sethsv_noeeprom(0, 0, 0);
 
-    // This is good in case I screw anything up with bad code; it's REALLY hard
+    // This is good in case I screw anythin   g up with bad code; it's REALLY hard
     // to fix it when mods get messed up since it can mess up the whole OS.
     //
     // Ctrl+alt+del can help on Windows, as can osk.exe sometimes.
@@ -183,13 +209,13 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     switch (get_highest_layer(layer_state)) {
         case _BASE:
 
-            rgb_matrix_set_color(15, RGB_LIGHT_WHITE);     // LH thumb key 1
-            // rgb_matrix_set_color(16, RGB_DARK_MAGENTA); // LH thumb key 2
-            rgb_matrix_set_color(17, RGB_LIGHT_GREEN);     // LH thumb key 3
+            rgb_matrix_set_color(15, RGB_DARK_WHITE);       // LH thumb key 1 -> Fun layer
+            rgb_matrix_set_color(16, RGB_DARK_MAGENTA);     // LH thumb key 2 -> Nav layer / Space
+            rgb_matrix_set_color(17, RGB_DARK_GREEN);       // LH thumb key 3 -> Num layer
 
-            // rgb_matrix_set_color(18, RGB_DARK_BLUE);   // RH thumb key 1
-            rgb_matrix_set_color(19, RGB_LIGHT_MAGENTA);  // RH thumb key 2
-            rgb_matrix_set_color(20, RGB_LIGHT_BLUE);     // RH thumb key 3
+            rgb_matrix_set_color(18, RGB_DARK_YELLOW);      // RH thumb key 1 -> Shift
+            rgb_matrix_set_color(19, RGB_DARK_MAGENTA);     // RH thumb key 2 -> Nav layer
+            rgb_matrix_set_color(20, RGB_DARK_BLUE);        // RH thumb key 3 -> Symbol layer
 
             light_up_left_mods(RGB_OFF, RGB_LIGHT_WHITE);
             light_up_right_mods(RGB_OFF, RGB_LIGHT_WHITE);
@@ -213,6 +239,28 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(6, RGB_DARK_CYAN);  // )}
             rgb_matrix_set_color(12, RGB_DARK_CYAN);  // [
             rgb_matrix_set_color(13, RGB_DARK_CYAN);  // ]
+            break;
+
+        case _NUM:
+            {
+                // Mods on the left hand side
+                light_up_left_mods(RGB_DARK_WHITE, RGB_LIGHT_WHITE);
+
+                // Number layer is green coded
+                const uint8_t numpad_keycodes[] = {20, 32, 33, 34, 29, 28, 27, 22, 23, 24};
+                set_all_keys_colors(numpad_keycodes, sizeof(numpad_keycodes) / sizeof(uint8_t), RGB_DARK_GREEN);
+            }
+            break;
+
+        case _FUN:
+            {
+                // Mods on the left hand side
+                light_up_left_mods(RGB_DARK_WHITE, RGB_LIGHT_WHITE);
+
+                // Function layer is white coded
+                const uint8_t numpad_keycodes[] = {20, 32, 33, 34, 29, 28, 27, 22, 23, 24};
+                set_all_keys_colors(numpad_keycodes, sizeof(numpad_keycodes) / sizeof(uint8_t), RGB_DARK_WHITE);
+            }
             break;
 
         case _NAV:
@@ -275,9 +323,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             default:
                 if (keycode != LT_NAV_SPC &&
                     keycode != MO_NAV  &&
-                    keycode != MO_SYMB /*&&
+                    keycode != MO_SYMB &&
                     keycode != MO_NUM &&
-                    keycode != MO_FUN*/) {
+                    keycode != MO_FUN) {
                     // Reset the OSM state when any other key is pressed.
                     reset_all_osm();
                 }
