@@ -33,5 +33,6 @@
     "clangd.arguments": [
         "--header-insertion=never",
         "--compile-commands-dir=C:/Users/hetze/qmk_firmware"
-    ]
+    ],
+    "C_Cpp.errorSquiggles": "disabled"
 }
