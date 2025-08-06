@@ -47,6 +47,20 @@ enum custom_keycodes {
 };
 #pragma endregion
 
+#pragma region Combos
+enum combos { NEI_CTRL, COMMADOT_SEMICOLON, COMBO_LENGTH };
+uint16_t COMBO_LEN = COMBO_LENGTH;
+
+const uint16_t PROGMEM nei_ctrl[]              = {KC_N, KC_E, KC_I, COMBO_END};
+const uint16_t PROGMEM commadot_semicolon[]    = {KC_COMM, KC_DOT, COMBO_END};
+
+combo_t key_combos[] = {
+    [NEI_CTRL]          = COMBO(nei_ctrl, KC_LCTL),
+    [COMMADOT_SEMICOLON]= COMBO(commadot_semicolon, KC_SCLN),
+};
+
+#pragma endregion
+
 #pragma region Layouts
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -120,6 +134,16 @@ bool active_left_gui_osm = false;
 #pragma endregion Variables
 
 #pragma region Helper functions
+bool is_shift_held(void) {
+    return (get_mods() & MOD_BIT(KC_LSFT)) || (get_mods() & MOD_BIT(KC_RSFT));
+}
+
+void tap_altgr(uint16_t keycode) {
+    register_code(KC_RALT);
+    tap_code_delay(keycode, 0);
+    unregister_code(KC_RALT);
+}
+
 void light_up_left_mods(
     uint8_t r_off, uint8_t g_off, uint8_t b_off,
     uint8_t r_on, uint8_t g_on, uint8_t b_on
@@ -212,12 +236,12 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         case _BASE:
 
             rgb_matrix_set_color(15, RGB_DARK_WHITE);       // LH thumb key 1 -> Fun layer
-            rgb_matrix_set_color(16, RGB_DARK_MAGENTA);     // LH thumb key 2 -> Nav layer / Space
-            rgb_matrix_set_color(17, RGB_DARK_GREEN);       // LH thumb key 3 -> Num layer
+            rgb_matrix_set_color(16, RGB_LIGHT_MAGENTA);    // LH thumb key 2 -> Nav layer / Space
+            rgb_matrix_set_color(17, RGB_LIGHT_GREEN);      // LH thumb key 3 -> Num layer
 
-            rgb_matrix_set_color(18, RGB_DARK_YELLOW);      // RH thumb key 1 -> Shift
-            rgb_matrix_set_color(19, RGB_DARK_MAGENTA);     // RH thumb key 2 -> Nav layer
-            rgb_matrix_set_color(20, RGB_DARK_BLUE);        // RH thumb key 3 -> Symbol layer
+            // rgb_matrix_set_color(18, RGB_DARK_YELLOW);   // RH thumb key 1 -> Shift
+
+            rgb_matrix_set_color(20, RGB_LIGHT_BLUE);       // RH thumb key 3 -> Symbol layer
 
             light_up_left_mods(RGB_OFF, RGB_LIGHT_WHITE);
             light_up_right_mods(RGB_OFF, RGB_LIGHT_WHITE);
@@ -230,17 +254,25 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             // Symbol layer is blue coded
 
             // Umlauts
-            rgb_matrix_set_color(0, RGB_DARK_BLUE);  // ü
-            rgb_matrix_set_color(1, RGB_DARK_BLUE);  // Ü
-            rgb_matrix_set_color(9, RGB_DARK_BLUE);  // ä
-            rgb_matrix_set_color(8, RGB_DARK_BLUE);  // Ä
-            rgb_matrix_set_color(10, RGB_DARK_BLUE);  // ß
+            rgb_matrix_set_color(0, RGB_DARK_CYAN);  // ü
+            rgb_matrix_set_color(1, RGB_DARK_CYAN);  // Ü
+            rgb_matrix_set_color(9, RGB_DARK_CYAN);  // ä
+            rgb_matrix_set_color(8, RGB_DARK_CYAN);  // Ä
+            rgb_matrix_set_color(10, RGB_DARK_CYAN);  // ß
 
             // Brackets
-            rgb_matrix_set_color(7, RGB_DARK_CYAN);  // ({
-            rgb_matrix_set_color(6, RGB_DARK_CYAN);  // )}
+            rgb_matrix_set_color(7, RGB_DARK_YELLOW);  // ({
+            rgb_matrix_set_color(6, RGB_DARK_YELLOW);  // )}
             rgb_matrix_set_color(12, RGB_DARK_CYAN);  // [
             rgb_matrix_set_color(13, RGB_DARK_CYAN);  // ]
+
+            // Other keys
+            rgb_matrix_set_color(2, RGB_DARK_BLUE);
+            rgb_matrix_set_color(3, RGB_DARK_BLUE);
+            rgb_matrix_set_color(4, RGB_DARK_BLUE);
+            rgb_matrix_set_color(5, RGB_DARK_BLUE);
+            rgb_matrix_set_color(11, RGB_DARK_BLUE);
+            rgb_matrix_set_color(14, RGB_DARK_BLUE);
             break;
 
         case _NUM:
@@ -272,12 +304,25 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             // Navigation layer is magenta coded
 
             // Color the arrow keys
-            rgb_matrix_set_color(33, RGB_DARK_MAGENTA);     // Up
-            rgb_matrix_set_color(29, RGB_DARK_MAGENTA);     // Left
-            rgb_matrix_set_color(28, RGB_DARK_MAGENTA);     // Down
-            rgb_matrix_set_color(27, RGB_DARK_MAGENTA);     // Right
+            rgb_matrix_set_color(31, RGB_DARK_RED);         // Z -> Page up
+            rgb_matrix_set_color(32, RGB_DARK_RED);         // U -> Home
+            rgb_matrix_set_color(33, RGB_DARK_MAGENTA);     // I -> Up
+            rgb_matrix_set_color(32, RGB_DARK_MAGENTA);     // I -> End
 
-            rgb_matrix_set_color(34, RGB_DARK_RED);       // ESC
+            rgb_matrix_set_color(30, RGB_DARK_RED);         // H -> Page down
+            rgb_matrix_set_color(29, RGB_DARK_MAGENTA);     // J -> Left
+            rgb_matrix_set_color(28, RGB_DARK_MAGENTA);     // K -> Down
+            rgb_matrix_set_color(27, RGB_DARK_MAGENTA);     // L -> Right
+            rgb_matrix_set_color(26, RGB_DARK_WHITE);       // Ö -> Space
+
+            rgb_matrix_set_color(21, RGB_DARK_RED);         // N -> ESC
+            rgb_matrix_set_color(22, RGB_DARK_RED);         // M -> Backspace
+            rgb_matrix_set_color(23, RGB_DARK_WHITE);       // , -> Enter
+            rgb_matrix_set_color(24, RGB_DARK_YELLOW);      // . -> Tab
+            rgb_matrix_set_color(25, RGB_DARK_WHITE);       // Ä -> DEL
+
+            rgb_matrix_set_color(18, RGB_LIGHT_WHITE);      // RH thumb key 1 -> Enter
+            rgb_matrix_set_color(19, RGB_LIGHT_WHITE);      // RH thumb key 2 -> Backspace
             break;
     }
     return false;
@@ -297,6 +342,48 @@ void oneshot_mods_changed_user(uint8_t mods) {
 // functions return true QMK will process the keycodes as usual.
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
+
+        bool sent_keycode = false;
+        bool isLeftShiftHeld = get_mods() & MOD_BIT(KC_LSFT);
+        bool isRightShiftHeld = get_mods() & MOD_BIT(KC_RSFT);
+        switch (keycode)
+        {
+            case LEFT_ENCLOSE:
+                if (isLeftShiftHeld) {
+                    unregister_mods(MOD_BIT(KC_LSFT));
+                    tap_altgr(KC_7); // {
+                    register_mods(MOD_BIT(KC_LSFT));
+                }
+                else if (isRightShiftHeld) {
+                    unregister_mods(MOD_BIT(KC_RSFT));
+                    tap_altgr(KC_7); // {
+                    register_mods(MOD_BIT(KC_RSFT));
+                }
+                else {
+                    tap_code16(S(KC_8)); // (
+                }
+                sent_keycode = true;
+                break;
+
+            case RIGHT_ENCLOSE:
+                if (isLeftShiftHeld) {
+                    unregister_mods(MOD_BIT(KC_LSFT));
+                    tap_altgr(KC_0); // }
+                    register_mods(MOD_BIT(KC_LSFT));
+                }
+                else if (isRightShiftHeld) {
+                    unregister_mods(MOD_BIT(KC_RSFT));
+                    tap_altgr(KC_0); // }
+                    register_mods(MOD_BIT(KC_RSFT));
+                } else {
+                    tap_code16(S(KC_9)); // )
+                }
+                sent_keycode = true;
+                break;
+        }
+        if (sent_keycode) return false;
+
+        // Handle one shot mods
         switch (keycode) {
             case OS_RSFT:
                 active_right_shift_osm = true;
@@ -322,6 +409,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             case OS_LGUI:
                 active_left_gui_osm = true;
                 break;
+
             default:
                 if (keycode != LT_NAV_SPC &&
                     keycode != MO_NAV  &&
@@ -337,6 +425,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
+#ifdef TAPPING_TERM_PER_KEY
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LT_NAV_SPC:
@@ -345,4 +434,20 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return TAPPING_TERM;
     }
 }
+#endif
+
+// Note: by default, COMBO_TERM is 50ms (https://docs.qmk.fm/#/feature_combo?id=combo-term)
+// This means you need to press both keys within 50ms to activate the combo.
+// If you accidentally trigger it too much, lower it.
+#ifdef COMBO_TERM_PER_COMBO
+uint16_t get_combo_term(uint16_t index, combo_t *combo) {
+    switch (index) {
+        case NEI_CTRL:
+            return 40;
+    }
+
+    return COMBO_TERM;
+}
+#endif
+
 #pragma endregion

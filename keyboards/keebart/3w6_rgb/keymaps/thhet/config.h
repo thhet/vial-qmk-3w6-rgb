@@ -23,4 +23,8 @@
 // even if it is outside the tapping term.
 #define RETRO_TAPPING
 
+// Some common bigrams should have lower COMBO_TERMs so that I only activate the
+// combo when I really mean to.
+#define COMBO_TERM_PER_COMBO
+
 #endif
